@@ -1,0 +1,78 @@
+# Maintainer: gfresnais <pro[at]gfresnais[dot]xyz>
+# Created by: Tk-Glitch <ti3nou at gmail dot com>
+# Credits to: the maintainers of proton-ge-custom-bin (https://aur.archlinux.org/packages/proton-ge-custom-bin/) for many parts of this PKGBUILD
+
+## package informations
+pkgname=proton-tkg-bin
+pkgver=6.8.r0.g0f00e37c
+pkgrel=326
+pkgdesc="This 'Wine to rule them all' package is the result of some random pkgbuild found online. Looks safe to me, amirite? Some variants of it can be found in lutris runners."
+arch=('x86_64')
+url="https://github.com/Frogging-Family/wine-tkg-git"
+license=('LGPL' 'BSD' 'zlib' 'MIT' 'MPL' 'custom')
+
+## dependency hell
+depends=('python'
+         'vulkan-icd-loader')
+optdepends=('kdialog: KDE splash dialog support'
+            'zenity: GNOME splash dialog support'
+            'python-kivy: splash dialog support (big picture mode)'
+            'steam: use proton with steam like intended'
+            'lib32-vulkan-icd-loader: dxvk dependency for 32bit prefixes'
+            'vulkan-driver: actually have a vulkan driver installed'
+            'linux-fsync: a kernel with futex-wait-multiple support'
+            'linux-zen: a kernel with futex-wait-multiple support'
+            'linux-pf: a kernel with futex-wait-multiple support'
+            'winetricks: protonfixes backend - highly recommended'
+            'wine: support for 32bit prefixes'
+            'xboxdrv: gamepad driver service'
+            'python-cef: generic splash dialog support')
+
+## checking conflicts
+provides=("proton")
+conflicts=("proton-ge-custom-stable-bin")
+
+## makepkg options
+options=('!strip')
+
+_pkgname=proton_tkg_${pkgver}.release.tar.xz
+
+## sources
+source=("${_pkgname}::$url/releases/download/${pkgver}/${_pkgname}")
+
+## integrity
+md5sums=('SKIP')
+
+sha1sums=('SKIP')
+
+sha256sums=('SKIP')
+
+## paths and files
+_protondir=usr/share/steam/compatibilitytools.d/${_pkgname}
+_licensedir=usr/share/licenses/${_pkgname}
+_execfile=usr/bin/proton
+_protoncfg=${_protondir}/user_settings.py
+
+## user edited files to backup
+backup=("${_protoncfg}")
+
+build() {
+	## setup paths
+	sed -i "s|_proton=echo|_proton=/${_protondir}/proton|" ${srcdir}/launchers/proton.sh
+}
+
+package() {
+	## create paths
+	install -d ${pkgdir}/${_protondir}/
+	install -d ${pkgdir}/${_licensedir}/
+	install -d ${pkgdir}/$(dirname ${_execfile})/
+	## licenses
+	mv ${_srcdir}/LICENSE ${pkgdir}/${_licensedir}/license
+	mv ${_srcdir}/LICENSE.OFL ${pkgdir}/${_licensedir}/license_OFL
+	mv ${_srcdir}/protonfixes/LICENSE ${pkgdir}/${_licensedir}/license_protonfixes
+	## config files
+	install --mode=0775 --group=50 ${srcdir}/configs/user_settings.py ${pkgdir}/${_protoncfg}
+	## executables
+	mv ${_srcdir}/* ${pkgdir}/${_protondir}
+	install --mode=0755 ${srcdir}/launchers/proton.sh ${pkgdir}/${_execfile}
+}

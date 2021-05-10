@@ -1,0 +1,46 @@
+# Maintainer: gfresnais <pro[at]gfresnais[dot]xyz>
+# Created by: Tk-Glitch <ti3nou at gmail dot com>
+
+## package informations
+pkgname=wine-tkg-staging-fsync-git-bin
+pkgver=6.8.r0.g0f00e37c
+pkgrel=326
+pkgdesc="This 'Wine to rule them all' package is the result of some random pkgbuild found online. Looks safe to me, amirite? Some variants of it can be found in lutris runners."
+arch=('x86_64')
+url="https://github.com/Frogging-Family/wine-tkg-git"
+license=('LGPL')
+
+## dependency hell
+depends=(giflib lib32-giflib libpng lib32-libpng libldap 
+	lib32-libldap gnutls lib32-gnutls mpg123 lib32-mpg123 openal 
+	lib32-openal v4l-utils lib32-v4l-utils libpulse lib32-libpulse 
+	libgpg-error lib32-libgpg-error alsa-plugins lib32-alsa-plugins 
+	alsa-lib lib32-alsa-lib libjpeg-turbo lib32-libjpeg-turbo sqlite 
+	lib32-sqlite libxcomposite lib32-libxcomposite libxinerama lib32-libgcrypt 
+	libgcrypt lib32-libxinerama ncurses lib32-ncurses opencl-icd-loader 
+	lib32-opencl-icd-loader libxslt lib32-libxslt libva lib32-libva gtk3 
+	lib32-gtk3 gst-plugins-base-libs lib32-gst-plugins-base-libs 
+	vulkan-icd-loader lib32-vulkan-icd-loader)
+
+## checking conflicts
+provides=("wine")
+conflicts=("wine" "wine-wow64" "wine-staging" "wine-esync")
+
+## makepkg options
+options=('!strip')
+
+_pkgname=${pkgname//-bin/}-${pkgver}-${pkgrel}-${arch}.pkg.tar.zst
+
+## sources
+source=("${_pkgname}::$url/releases/download/${pkgver}/${_pkgname}")
+
+## integrity
+md5sums=('9848b1704a14fd412774ce6bb2759868')
+
+sha1sums=('8299e329b87ec173b96cf6e5e94ab192ca1c84e2')
+
+sha256sums=('80e3e2a596eb3666c7f02c7b79554d14ad60e6b06a1f52e48b2e95aab9f881df')
+
+package() {
+	install -dm755 "${pkgdir}/usr/bin/"
+}
